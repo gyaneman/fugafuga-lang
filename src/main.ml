@@ -1,0 +1,5 @@
+let main =
+  print_string "Hello, world!\n"
+;;
+
+main
