@@ -1,9 +1,25 @@
-/* parser.mly */
+%{
+open Ast
+%}
 
-%token <int> INT
-%token PLUS MINUS MUL DIV
-%token PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
-%token EOF
+
+/* literals */
+%token <Ast.meta*int> INT
+
+/* identifier */
+%token <Ast.meta*string> IDENT
+
+/* operators */
+%token <Ast.meta> PLUS MINUS MUL DIV
+
+/* parenthesis, braces, brackets */
+%token <Ast.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
+
+/* keywords */
+%token <Ast.meta> FUN RET VAR
+
+/* others */
+%token <Ast.meta> EOF
 
 %left PLUS MINUS
 %left MUL DIV
@@ -12,6 +28,9 @@
 %start main
 %type <int> main
 
+
+
+
 %%
 
 main:
@@ -19,7 +38,7 @@ main:
 ;
 
 expr:
-  | INT   { $1 }
+  | INT   { let (_, num) = $1 in num }
   | PARENL expr PARENR { $2 }
   | expr PLUS expr { $1 + $3 }
   | expr MINUS expr { $1 - $3 }
