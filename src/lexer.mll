@@ -28,6 +28,9 @@ type keyword =
   | KEY_FUN
   | KEY_RET
   | KEY_VAR
+  | KEY_FOR
+  | KEY_IF
+  | KEY_ELSE
 ;;
 
 let keyword_table = Hashtbl.create 20
@@ -36,7 +39,10 @@ let _ =
   [
     "fun", KEY_FUN;
     "ret", KEY_RET;
-    "var", KEY_VAR
+    "var", KEY_VAR;
+    "for", KEY_FOR;
+    "if", KEY_IF;
+    "else", KEY_ELSE
   ]
 }
 
@@ -54,6 +60,7 @@ rule token = parse
 | '-'                 { MINUS (get_pos lexbuf) }
 | '*'                 { MUL (get_pos lexbuf) }
 | '/'                 { DIV (get_pos lexbuf)}
+| '%'                 { MOD (get_pos lexbuf) }
 
 | '('                 { PARENL (get_pos lexbuf)}
 | ')'                 { PARENR (get_pos lexbuf)}
@@ -64,6 +71,8 @@ rule token = parse
 | '['                 { BRACKETL (get_pos lexbuf)}
 | ']'                 { BRACKETR (get_pos lexbuf)}
 
+| ';'                 { SEMICOLON (get_pos lexbuf) }
+
 | alpha alnum*        {
 let id = Lexing.lexeme lexbuf in
 try
@@ -71,6 +80,9 @@ try
   | KEY_FUN -> FUN (get_pos lexbuf)
   | KEY_RET -> RET (get_pos lexbuf)
   | KEY_VAR -> VAR (get_pos lexbuf)
+  | KEY_FOR -> FOR (get_pos lexbuf)
+  | KEY_IF -> IF (get_pos lexbuf)
+  | KEY_ELSE -> ELSE (get_pos lexbuf)
   ;
 with Not_found ->
   IDENT (get_pos lexbuf, id)

@@ -1,12 +1,15 @@
 (* main.ml *)
 
+open Ast
+
+
 let exec_file fname =
   let ic = open_in fname in
   try
     let lexbuf = Lexing.from_channel ic in
     let result = Parser.main Lexer.token lexbuf in
     close_in ic;
-    print_int result;
+    print_string (string_of_statement result);
     print_newline();
     flush stdout;
   with e ->
