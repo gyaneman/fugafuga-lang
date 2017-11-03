@@ -1,5 +1,6 @@
 (* ast.ml *)
 
+(* literals *)
 type literal =
   | Null
   | Int of int
@@ -26,6 +27,7 @@ type bin_op =
   | GTE
 ;;
 
+(* expressions *)
 type expression =
   | Binary of bin_op * expression * expression
   | Unary of una_op * expression
@@ -34,6 +36,7 @@ type expression =
   | Literal of literal
 ;;
 
+(* statements *)
 type statement =
   | Block of statement list
   | For of expression * expression * expression * statement
@@ -42,10 +45,9 @@ type statement =
 ;;
 
 
-
+(* for metainfo *)
 type pos = { fname: string; lnum: int; bol: int; cnum: int };;
 type meta = { start_p: pos; end_p: pos };;
-
 let string_of_pos { fname = fn; lnum = ln; bol = bo; cnum = cn } =
   "(fname:" ^ fn ^ ", lnum:" ^ string_of_int ln ^
   ", bol:" ^ string_of_int bo ^ ", cnum:" ^ string_of_int cn ^ ")"
@@ -54,6 +56,9 @@ let string_of_meta { start_p = sp; end_p = ep } =
   "(start_p:" ^ string_of_pos sp ^ ", end_p:" ^ string_of_pos ep ^ ")"
 ;;
 
+
+
+(* pretty printer for AST *)
 let strlit s = "\"" ^ s ^ "\"";;
 let prop pn valstr =
   strlit pn ^ ":" ^ valstr
