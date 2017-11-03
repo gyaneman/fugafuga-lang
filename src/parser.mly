@@ -12,6 +12,12 @@ open Ast
 /* operators */
 %token <Ast.meta> PLUS MINUS MUL DIV MOD
 
+/* assignment operators */
+%token <Ast.meta> ASSIGN
+
+/* comparison operators */
+%token <Ast.meta> EQ NOTEQ LT LTE GT GTE NOT 
+
 /* parenthesis, braces, brackets */
 %token <Ast.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
 
@@ -26,7 +32,8 @@ open Ast
 
 %left PLUS MINUS
 %left MUL DIV MOD
-%nonassoc UMINUS
+%left EQ NOTEQ LT LTE GT GTE
+%nonassoc UMINUS NOT
 
 %start main
 %type <Ast.statement> main
@@ -43,6 +50,10 @@ main:
 stmt:
   | expr SEMICOLON {
     Expression($1)
+  }
+
+  | BRACEL stmt_list BRACER {
+    Block($2)
   }
 
   | FOR expr SEMICOLON expr SEMICOLON expr BRACEL stmt_list BRACER
@@ -86,6 +97,32 @@ expr:
   }
   | MINUS expr %prec UMINUS {
     Binary(Mul, $2, Literal(Int(-1)))
+  }
+
+  | expr ASSIGN expr {
+    Assign ($1, $3)
+  }
+
+  | expr EQ expr {
+    Binary (Equal, $1, $3)
+  }
+  | expr NOTEQ expr {
+    Binary (NotEqual, $1, $3)
+  }
+  | expr LT expr {
+    Binary (LT, $1, $3)
+  }
+  | expr LTE expr {
+    Binary (LTE, $1, $3)
+  }
+  | expr GT expr {
+    Binary (GT, $1, $3)
+  }
+  | expr GTE expr {
+    Binary (GTE, $1, $3)
+  }
+  | NOT expr {
+    Unary (Not, $2)
   }
 
     | IDENT {

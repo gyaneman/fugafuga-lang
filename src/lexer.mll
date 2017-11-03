@@ -62,6 +62,17 @@ rule token = parse
 | '/'                 { DIV (get_pos lexbuf)}
 | '%'                 { MOD (get_pos lexbuf) }
 
+| '='                 { ASSIGN (get_pos lexbuf) }
+
+| "=="                { EQ (get_pos lexbuf) }
+| "!="                { NOTEQ (get_pos lexbuf) }
+| "<"                 { LT (get_pos lexbuf) }
+| "<="                { LTE (get_pos lexbuf) }
+| ">"                 { GT (get_pos lexbuf) }
+| ">="                { GTE (get_pos lexbuf) }
+
+| '!'                 { NOT (get_pos lexbuf) }
+
 | '('                 { PARENL (get_pos lexbuf)}
 | ')'                 { PARENR (get_pos lexbuf)}
 

@@ -6,16 +6,30 @@ type literal =
   | String of string
 ;;
 
+(* unary operators *)
+type una_op =
+  | Not
+;;
+
+(* binary operators *)
 type bin_op =
   | Add
   | Sub
   | Mul
   | Div
   | Mod
+  | Equal
+  | NotEqual
+  | LT
+  | LTE
+  | GT
+  | GTE
 ;;
 
 type expression =
   | Binary of bin_op * expression * expression
+  | Unary of una_op * expression
+  | Assign of expression * expression (* dst, src *)
   | Ident of string
   | Literal of literal
 ;;
@@ -81,9 +95,17 @@ and string_of_expression exp =
   match exp with
   | Binary (op, left, right) ->
       prop "type" (strlit "BinaryExp") ^ "," ^
-      prop "operator" (strlit (string_of_operator op)) ^ "," ^
+      prop "operator" (strlit (string_of_binop op)) ^ "," ^
       prop "left" (string_of_expression left) ^ "," ^
       prop "right" (string_of_expression right)
+  | Unary (op, e) ->
+      prop "type" (strlit "UnaryExp") ^ "," ^
+      prop "operator" (strlit (string_of_unaop op)) ^ "," ^
+      prop "exp" (string_of_expression e)
+  | Assign (dst, src) ->
+      prop "type" (strlit "Assign") ^ "," ^
+      prop "destination" (string_of_expression dst) ^ "," ^
+      prop "source" (string_of_expression src)
   | Ident (id) ->
       prop "type" (strlit "Ident") ^ "," ^
       prop "id" (strlit id)
@@ -92,12 +114,20 @@ and string_of_expression exp =
       prop "literal" (string_of_literal lit)
   ;
   ^ "}"
-and string_of_operator = function
+and string_of_binop = function
   | Add -> "add"
   | Sub -> "sub"
   | Mul -> "mul"
   | Div -> "div"
   | Mod -> "mod"
+  | Equal -> "equal"
+  | NotEqual -> "not equal"
+  | LT -> "less than"
+  | LTE -> "less than equal"
+  | GT -> "greater than"
+  | GTE -> "greater than equal"
+and string_of_unaop = function
+  | Not -> "not"
 and string_of_literal lit =
   "{" ^
   match lit with
