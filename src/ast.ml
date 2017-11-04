@@ -32,12 +32,12 @@ type expression =
   | Binary of bin_op * expression * expression
   | Unary of una_op * expression
   | Assign of expression * expression (* dst, src *)
+  | Func of expression list * statement list
+  | Call of expression * expression list
   | Ident of string
   | Literal of literal
-;;
-
 (* statements *)
-type statement =
+and statement =
   | Block of statement list
   | For of expression * expression * expression * statement
   | If of expression * statement * statement
@@ -95,6 +95,18 @@ and string_of_statement_list stmtlist =
 and string_of_statement_list_ = function
   | [] -> ""
   | stmtlist -> "," ^ string_of_statement_list stmtlist
+  ;
+and string_of_expression_list exprlist =
+  match exprlist with
+  | [] -> ""
+  | expr :: exprlist_ ->
+      string_of_expression expr ^
+      string_of_expression_list_ exprlist_
+  ;
+and string_of_expression_list_ = function
+  | [] -> ""
+  | exprlist -> "," ^ string_of_expression_list exprlist
+  ;
 and string_of_expression exp =
   "{" ^
   match exp with
@@ -111,6 +123,14 @@ and string_of_expression exp =
       prop "type" (strlit "Assign") ^ "," ^
       prop "destination" (string_of_expression dst) ^ "," ^
       prop "source" (string_of_expression src)
+  | Func (params, stmts) ->
+      prop "type" (strlit "Func") ^ "," ^
+      prop "params" ("[" ^ string_of_expression_list params ^ "]") ^ "," ^
+      prop "stmts" (string_of_statement_list stmts)
+  | Call (f, args) ->
+      prop "type" (strlit "Call") ^ "," ^
+      prop "f" (string_of_expression f) ^ "," ^
+      prop "args" ("[" ^ string_of_expression_list args ^ "]")
   | Ident (id) ->
       prop "type" (strlit "Ident") ^ "," ^
       prop "id" (strlit id)

@@ -25,7 +25,7 @@ let get_pos lb =
 ;;
 
 type keyword =
-  | KEY_FUN
+  | KEY_FUNC
   | KEY_RET
   | KEY_VAR
   | KEY_FOR
@@ -37,7 +37,7 @@ let keyword_table = Hashtbl.create 20
 let _ =
   List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
   [
-    "fun", KEY_FUN;
+    "func", KEY_FUNC;
     "ret", KEY_RET;
     "var", KEY_VAR;
     "for", KEY_FOR;
@@ -83,12 +83,13 @@ rule token = parse
 | ']'                 { BRACKETR (get_pos lexbuf)}
 
 | ';'                 { SEMICOLON (get_pos lexbuf) }
+| ','                 { CAMMA (get_pos lexbuf) }
 
 | alpha alnum*        {
 let id = Lexing.lexeme lexbuf in
 try
   match Hashtbl.find keyword_table id with
-  | KEY_FUN -> FUN (get_pos lexbuf)
+  | KEY_FUNC -> FUNC (get_pos lexbuf)
   | KEY_RET -> RET (get_pos lexbuf)
   | KEY_VAR -> VAR (get_pos lexbuf)
   | KEY_FOR -> FOR (get_pos lexbuf)

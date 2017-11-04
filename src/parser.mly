@@ -22,10 +22,10 @@ open Ast
 %token <Ast.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
 
 /* symbols */
-%token <Ast.meta> SEMICOLON
+%token <Ast.meta> SEMICOLON CAMMA
 
 /* keywords */
-%token <Ast.meta> FUN RET VAR FOR IF ELSE
+%token <Ast.meta> FUNC RET VAR FOR IF ELSE
 
 /* others */
 %token <Ast.meta> EOF
@@ -125,7 +125,14 @@ expr:
     Unary (Not, $2)
   }
 
-    | IDENT {
+  | FUNC PARENL ident_list PARENR BRACEL stmt_list BRACER {
+    Func($3, $6)
+  }
+  | expr PARENL expr_list PARENR {
+    Call ($1, $3)
+  }
+
+  | IDENT {
     let (_, id) = $1 in Ident(id)
   }
 ;
@@ -135,4 +142,16 @@ stmt_list:
   | stmt stmt_list { $1 :: $2 }
 ;
 
+expr_list:
+  | expr { [$1] }
+  | expr CAMMA expr_list { $1 :: $3 }
+;
+
+ident_list:
+  | IDENT { let (_, id) = $1 in [Ident (id)] }
+  | IDENT CAMMA ident_list {
+    let (_, id) = $1 in
+    Ident (id) :: $3
+  }
+;
 
