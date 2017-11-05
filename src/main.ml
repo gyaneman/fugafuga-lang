@@ -1,6 +1,8 @@
 (* main.ml *)
 
 open Ast
+open Value
+open Environment
 
 
 let exec_file fname =
@@ -20,6 +22,10 @@ let exec_file fname =
 let usagemsg = "./main.byte program.fgl"
 
 let main =
+  let env = extend_env "zero" (IntVal(0)) [] in
+  print_string "init env\n";
+  print_env env;
+  print_string "\n\n";
   let speclist = [] in
   Arg.parse speclist exec_file usagemsg
 ;;
