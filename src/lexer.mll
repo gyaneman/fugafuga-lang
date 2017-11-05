@@ -31,6 +31,8 @@ type keyword =
   | KEY_FOR
   | KEY_IF
   | KEY_ELSE
+  | KEY_TRUE
+  | KEY_FALSE
 ;;
 
 let keyword_table = Hashtbl.create 20
@@ -42,7 +44,9 @@ let _ =
     "var", KEY_VAR;
     "for", KEY_FOR;
     "if", KEY_IF;
-    "else", KEY_ELSE
+    "else", KEY_ELSE;
+    "true", KEY_TRUE;
+    "false", KEY_FALSE
   ]
 }
 
@@ -95,6 +99,8 @@ try
   | KEY_FOR -> FOR (get_pos lexbuf)
   | KEY_IF -> IF (get_pos lexbuf)
   | KEY_ELSE -> ELSE (get_pos lexbuf)
+  | KEY_TRUE -> TRUE (get_pos lexbuf)
+  | KEY_FALSE -> FALSE (get_pos lexbuf)
   ;
 with Not_found ->
   IDENT (get_pos lexbuf, id)

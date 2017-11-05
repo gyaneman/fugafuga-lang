@@ -4,6 +4,7 @@
 type literal =
   | Null
   | Int of int
+  | Bool of bool
   | String of string
 ;;
 
@@ -39,9 +40,11 @@ type expression =
 (* statements *)
 and statement =
   | Block of statement list
-  | For of expression * expression * expression * statement
-  | If of expression * statement * statement
+  | For of expression * expression * expression * statement list
+  | If of expression * statement list * statement list
   | Expression of expression
+(* program *)
+and program = { program: statement list }
 ;;
 
 
@@ -63,7 +66,12 @@ let strlit s = "\"" ^ s ^ "\"";;
 let prop pn valstr =
   strlit pn ^ ":" ^ valstr
 
-let rec string_of_statement statement = 
+let rec string_of_program pg =
+  "{" ^
+  prop "type" (strlit "Program") ^ "," ^
+  prop "program" (string_of_statement_list pg.program)
+  ^ "}"
+and string_of_statement statement = 
   "{" ^
   match statement with
   | Block (stmtlist) ->
@@ -74,12 +82,12 @@ let rec string_of_statement statement =
       prop "init" (string_of_expression init) ^ "," ^
       prop "cond" (string_of_expression cond) ^ "," ^
       prop "update" (string_of_expression update) ^ "," ^
-      prop "body" (string_of_statement body)
+      prop "body" ("[" ^ string_of_statement_list body ^ "]")
   | If (exp, conseq, alter) ->
       prop "type" (strlit "If") ^ "," ^
       prop "condition" (string_of_expression exp) ^ "," ^
-      prop "conseq" (string_of_statement conseq) ^ "," ^
-      prop "alter" (string_of_statement alter)
+      prop "conseq" ("[" ^ string_of_statement_list conseq ^ "]") ^ "," ^
+      prop "alter" ("[" ^ string_of_statement_list alter ^ "]")
   | Expression (exp) ->
       prop "type" (strlit "Expression") ^ "," ^
       prop "exp" (string_of_expression exp)
@@ -161,6 +169,9 @@ and string_of_literal lit =
   | Int (num) ->
       prop "type" (strlit "Int") ^ "," ^
       prop "num" (string_of_int num)
+  | Bool (b) ->
+      prop "type" (strlit "Bool") ^ "," ^
+      prop "bool" (string_of_bool b)
   | String (str) ->
       prop "type" (strlit "String") ^ "," ^
       prop "str" (strlit str)

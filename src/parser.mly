@@ -25,7 +25,7 @@ open Ast
 %token <Ast.meta> SEMICOLON CAMMA
 
 /* keywords */
-%token <Ast.meta> FUNC RET VAR FOR IF ELSE
+%token <Ast.meta> FUNC RET VAR FOR IF ELSE TRUE FALSE
 
 /* others */
 %token <Ast.meta> EOF
@@ -36,7 +36,7 @@ open Ast
 %nonassoc UMINUS NOT
 
 %start main
-%type <Ast.statement> main
+%type <Ast.program> main
 
 
 
@@ -44,7 +44,7 @@ open Ast
 %%
 
 main:
-  stmt_list EOF { Block($1) }
+  stmt_list EOF { { program=$1 } }
 ;
 
 stmt:
@@ -58,15 +58,15 @@ stmt:
 
   | FOR expr SEMICOLON expr SEMICOLON expr BRACEL stmt_list BRACER
   {
-    For($2, $4, $6, Block($8))
+    For($2, $4, $6, $8)
   }
 
   | IF expr BRACEL stmt_list BRACER {
-    If ($2, Block($4), Block([]))
+    If ($2, $4, [])
   }
   | IF expr BRACEL stmt_list BRACER ELSE BRACEL stmt_list BRACER
   {
-    If ($2, Block($4), Block($8))
+    If ($2, $4, $8)
   }
 ;
 
@@ -75,6 +75,8 @@ expr:
     let (_, num) = $1 in
     Literal(Int(num))
   }
+  | TRUE { Literal (Bool (true)) }
+  | FALSE { Literal (Bool (false)) }
 
   | PARENL expr PARENR {
     $2
