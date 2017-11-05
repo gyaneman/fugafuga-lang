@@ -9,11 +9,11 @@ let exec_file fname =
   let ic = open_in fname in
   try
     let lexbuf = Lexing.from_channel ic in
-    let result = Parser.main Lexer.token lexbuf in
+    let ast = Parser.main Lexer.token lexbuf in
     close_in ic;
-    print_string (string_of_program result);
+    print_string (string_of_program ast);
     print_newline();
-    interp result [];
+    interp ast [];
     print_newline();
     flush stdout;
   with e ->
