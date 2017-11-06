@@ -56,6 +56,10 @@ stmt:
     Block($2)
   }
 
+  | VAR IDENT ASSIGN expr SEMICOLON {
+    let (_, id) = $2 in VarDecl (id, $4)
+  }
+
   | FOR expr SEMICOLON expr SEMICOLON expr BRACEL stmt_list BRACER
   {
     For($2, $4, $6, $8)
@@ -82,6 +86,7 @@ expr:
     $2
   }
 
+
   | expr PLUS expr {
     Binary(Add, $1, $3)
   }
@@ -99,10 +104,6 @@ expr:
   }
   | MINUS expr %prec UMINUS {
     Binary(Mul, $2, Literal(Int(-1)))
-  }
-
-  | expr ASSIGN expr {
-    Assign ($1, $3)
   }
 
   | expr EQ expr {
@@ -132,6 +133,10 @@ expr:
   }
   | expr PARENL expr_list PARENR {
     Call ($1, $3)
+  }
+
+  | IDENT ASSIGN expr {
+    let (_, id) = $1 in Assign (id, $3)
   }
 
   | IDENT {

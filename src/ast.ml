@@ -32,7 +32,7 @@ type bin_op =
 type expression =
   | Binary of bin_op * expression * expression
   | Unary of una_op * expression
-  | Assign of expression * expression (* dst, src *)
+  | Assign of string * expression (* dst, src *)
   | Func of expression list * statement list
   | Call of expression * expression list
   | Ident of string
@@ -43,6 +43,7 @@ and statement =
   | For of expression * expression * expression * statement list
   | If of expression * statement list * statement list
   | Expression of expression
+  | VarDecl of string * expression
 (* program *)
 and program = { program: statement list }
 ;;
@@ -69,7 +70,7 @@ let prop pn valstr =
 let rec string_of_program pg =
   "{" ^
   prop "type" (strlit "Program") ^ "," ^
-  prop "program" (string_of_statement_list pg.program)
+  prop "program" ("[" ^ string_of_statement_list pg.program ^ "]")
   ^ "}"
 and string_of_statement statement = 
   "{" ^
@@ -91,6 +92,10 @@ and string_of_statement statement =
   | Expression (exp) ->
       prop "type" (strlit "Expression") ^ "," ^
       prop "exp" (string_of_expression exp)
+  | VarDecl (dst_id, src_exp) ->
+      prop "type" (strlit "VarDecl") ^ "," ^
+      prop "destination" (strlit dst_id) ^ "," ^
+      prop "source" (string_of_expression src_exp)
   ;
   ^ "}"
 and string_of_statement_list stmtlist =
@@ -129,7 +134,7 @@ and string_of_expression exp =
       prop "exp" (string_of_expression e)
   | Assign (dst, src) ->
       prop "type" (strlit "Assign") ^ "," ^
-      prop "destination" (string_of_expression dst) ^ "," ^
+      prop "destination" (strlit dst) ^ "," ^
       prop "source" (string_of_expression src)
   | Func (params, stmts) ->
       prop "type" (strlit "Func") ^ "," ^

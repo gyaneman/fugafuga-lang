@@ -30,6 +30,9 @@ and interp_stmts stmtlist env =
           ;
       | Expression (exp) ->
           print_value (eval exp env); env;
+      | VarDecl (id, exp) ->
+          let exp_val = eval exp env in
+          extend_env id exp_val env;
       in
       interp_stmts stmtlist_ new_env
   ;
@@ -87,11 +90,19 @@ and eval exp env =
       | Not -> BoolVal (not (boolval_to_bool e_val));
       ;
   | Literal (lit) ->
-      match lit with
-      | Null -> NullVal
-      | Int (num) -> IntVal (num)
-      | Bool (b) -> BoolVal (b)
-      | String (str) -> StringVal (str)
+      begin
+        match lit with
+        | Null -> NullVal
+        | Int (num) -> IntVal (num)
+        | Bool (b) -> BoolVal (b)
+        | String (str) -> StringVal (str)
+      end
+  | Assign (id, exp) ->
+      let exp_val = eval exp env in
+      assign_env id exp_val env;
+      exp_val
+  | Ident (id) ->
+      apply_env env id
   | _ -> raise Not_implemented_yet
 ;;
 

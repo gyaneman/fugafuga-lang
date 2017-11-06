@@ -15,6 +15,12 @@ let rec apply_env env id =
   | el :: env_ -> if el.sym = id then !(el.valp) else apply_env env_ id
 ;;
 
+let rec assign_env id v env =
+  match env with
+  | [] -> raise Not_found_the_identifier_in_the_env
+  | el :: env_ -> if el.sym = id then el.valp := v else assign_env id v env_
+;;
+
 let print_env_elem el =
   print_string ("id: " ^ el.sym ^ ", val: " ^ string_of_value (!(el.valp)) ^ "\n")
 ;;
