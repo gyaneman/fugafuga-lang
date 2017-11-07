@@ -6,37 +6,47 @@ open Environment
 
 exception Type_error
 exception Not_implemented_yet
+exception Call_stack_error
+
+
+(* for the return value of functions *)
+let retval = ref NullVal;;
 
 
 let rec interp prog env =
   interp_stmts (prog.program) env
 and interp_stmts stmtlist env =
   match stmtlist with
-  | [] -> ()
+  | [] -> true
   | stmt :: stmtlist_ ->
+      let (is_continue, new_env) =
       match stmt with
       | Block (stmtlist__) ->
-          interp_stmts stmtlist__ env;
-          interp_stmts stmtlist_ env;
+          (interp_stmts stmtlist__ env, env);
       | For (init, cond, update, body) ->
           raise Not_implemented_yet
       | If (cond, conseq, alter) ->
           match (eval cond env) with
           | BoolVal (b) ->
               if b then
-                interp_stmts conseq env
+                (interp_stmts conseq env, env)
               else
-                interp_stmts alter env
+                (interp_stmts alter env, env)
           | _ -> raise Type_error;
           ;
-          interp_stmts stmtlist_ env;
       | Expression (exp) ->
-          print_value (eval exp env);
-          interp_stmts stmtlist_ env;
+          (true, env)
       | VarDecl (id, exp) ->
           let exp_val = eval exp env in
-          interp_stmts stmtlist_ (extend_env id exp_val env);
-  ;
+          (true, extend_env id exp_val env)
+      | Ret (exp) ->
+          retval := eval exp env;
+          (false, env);
+      in
+      if is_continue then
+        interp_stmts stmtlist_ new_env
+      else
+        false
 and eval exp env =
   match exp with
   | Binary (op, left, right) ->
@@ -98,13 +108,30 @@ and eval exp env =
         | Bool (b) -> BoolVal (b)
         | String (str) -> StringVal (str)
       end
+  | Func (params, body) ->
+      FuncVal (params, body)
+  | Call (f, args) ->
+      let f_val = eval f env in
+      match f_val with
+      | FuncVal (params, body) ->
+          let arg_vals = eval_list args env in
+          let new_env = extend_env_params params arg_vals env in
+          retval := NullVal;
+          interp_stmts body new_env;
+          !retval;
+      | _ -> raise Type_error;
+      ;
   | Assign (id, exp) ->
       let exp_val = eval exp env in
       assign_env id exp_val env;
       exp_val
   | Ident (id) ->
       apply_env env id
-  | _ -> raise Not_implemented_yet
+and eval_list explist env =
+  match explist with
+  | [] -> []
+  | exp :: explist_ ->
+      eval exp env :: eval_list explist_ env
 ;;
 
 

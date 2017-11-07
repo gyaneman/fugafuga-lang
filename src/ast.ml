@@ -33,7 +33,7 @@ type expression =
   | Binary of bin_op * expression * expression
   | Unary of una_op * expression
   | Assign of string * expression (* dst, src *)
-  | Func of expression list * statement list
+  | Func of string list * statement list
   | Call of expression * expression list
   | Ident of string
   | Literal of literal
@@ -44,6 +44,7 @@ and statement =
   | If of expression * statement list * statement list
   | Expression of expression
   | VarDecl of string * expression
+  | Ret of expression
 (* program *)
 and program = { program: statement list }
 ;;
@@ -96,6 +97,9 @@ and string_of_statement statement =
       prop "type" (strlit "VarDecl") ^ "," ^
       prop "destination" (strlit dst_id) ^ "," ^
       prop "source" (string_of_expression src_exp)
+  | Ret (exp) ->
+      prop "type" (strlit "Ret") ^ "," ^
+      prop "exp" (string_of_expression exp)
   ;
   ^ "}"
 and string_of_statement_list stmtlist =
@@ -138,7 +142,7 @@ and string_of_expression exp =
       prop "source" (string_of_expression src)
   | Func (params, stmts) ->
       prop "type" (strlit "Func") ^ "," ^
-      prop "params" ("[" ^ string_of_expression_list params ^ "]") ^ "," ^
+      prop "params" ("[" ^ string_of_string_list params ^ "]") ^ "," ^
       prop "stmts" (string_of_statement_list stmts)
   | Call (f, args) ->
       prop "type" (strlit "Call") ^ "," ^
@@ -152,6 +156,10 @@ and string_of_expression exp =
       prop "literal" (string_of_literal lit)
   ;
   ^ "}"
+and string_of_string_list = function
+  | [] -> ""
+  | str :: strlist ->
+      str ^ "," ^ string_of_string_list strlist
 and string_of_binop = function
   | Add -> "add"
   | Sub -> "sub"

@@ -72,6 +72,10 @@ stmt:
   {
     If ($2, $4, $8)
   }
+
+  | RET expr SEMICOLON {
+    Ret ($2)
+  }
 ;
 
 expr:
@@ -150,15 +154,17 @@ stmt_list:
 ;
 
 expr_list:
+  | /* empty */ { [] }
   | expr { [$1] }
   | expr CAMMA expr_list { $1 :: $3 }
 ;
 
 ident_list:
-  | IDENT { let (_, id) = $1 in [Ident (id)] }
+  | /* empty */ { [] }
+  | IDENT { let (_, id) = $1 in [id] }
   | IDENT CAMMA ident_list {
     let (_, id) = $1 in
-    Ident (id) :: $3
+    id :: $3
   }
 ;
 

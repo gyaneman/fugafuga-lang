@@ -1,5 +1,4 @@
 (* value.ml *)
-
 exception Value_type_error
 
 type value =
@@ -7,6 +6,7 @@ type value =
   | IntVal of int
   | BoolVal of bool
   | StringVal of string
+  | FuncVal of string list * Ast.statement list
 ;;
 
 let string_of_value = function
@@ -14,6 +14,7 @@ let string_of_value = function
   | IntVal (n) -> "Int(" ^ string_of_int n ^ ")"
   | BoolVal (b) -> "Bool(" ^ string_of_bool b ^ ")"
   | StringVal (s) -> "String(" ^ s ^ ")"
+  | FuncVal (params, body) -> "Func(...)"
 ;;
 
 let intval_to_int = function
