@@ -2,4 +2,4 @@ install: "bash -ex .travis-ocaml.sh"
 sudo: required
 script: make
 env:
-  - OCAML_VERSION=4.04.0
+  - OCAML_VERSION=4.04
