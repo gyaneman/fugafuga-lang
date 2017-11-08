@@ -1,6 +1,6 @@
 install: "bash -ex .travis-ocaml.sh"
 sudo: required
-script: opam install -y batteries; ./configure; make
+script: opam install -y batteries; ./configure; make; cat setup.data
 env:
   - OCAML_VERSION=4.04
 addons:
