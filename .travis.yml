@@ -1,7 +1,10 @@
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y ocaml-findlib
-install: "bash -ex .travis-ocaml.sh; opam install -y oasis ocamlfind"
+install:
+  - bash -ex .travis-ocaml.sh
+  - opam install -y oasis ocamlfind
+  - oasis version
 sudo: required
 script: oasis setup; make
 env:
