@@ -1,6 +1,6 @@
 install: "bash -ex .travis-ocaml.sh"
 sudo: required
-script: opam install -y ocamlfind; ocamlfind list; ocaml setup.ml -install; make
+script: ocamlfind list; ocaml setup.ml -install; make
 env:
   - OCAML_VERSION=4.04
 addons:
