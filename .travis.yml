@@ -3,7 +3,7 @@ before_install:
   - sudo apt-get install -y ocaml-findlib
 install: "bash -ex .travis-ocaml.sh"
 sudo: required
-script: opam install -y batteries; ./configure; make; cat setup.data
+script: oasis setup; ./configure; make; cat setup.data
 env:
   - OCAML_VERSION=4.04
 addons:
