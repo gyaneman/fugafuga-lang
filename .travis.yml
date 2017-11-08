@@ -1,6 +1,6 @@
 install: "bash -ex .travis-ocaml.sh"
 sudo: required
-script: ocaml setup.ml -configure; make
+script: opam install batteries; ./configure; make
 env:
   - OCAML_VERSION=4.04
 addons:
