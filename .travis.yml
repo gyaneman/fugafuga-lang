@@ -1,14 +1,13 @@
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y ocaml-findlib
 install:
   - bash -ex .travis-ocaml.sh
   - opam install -y oasis ocamlfind
+  - echo $PATH
+  - eval `opam config env`
 sudo: required
-script: echo $PATH; ls /home/travis/.opam/; ls /home/travis/.opam/4.04.2/bin ; make
+script: echo $PATH; eval `opam config env`;echo $PATH; make
 env:
   - OCAML_VERSION=4.04
-    #addons:
-    #apt:
-    #packages:
-    #  - ocaml-findlib
+addons:
+  apt:
+    packages:
+      - ocaml-findlib
