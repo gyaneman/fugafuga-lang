@@ -5,7 +5,7 @@ install:
   - bash -ex .travis-ocaml.sh
   - opam install -y oasis ocamlfind
 sudo: required
-script: which ocamlfind; ocamlfind list ; make
+script: echo $PATH; ls /home/travis/.opam/; ls /home/travis/.opam/4.04.2/bin ; make
 env:
   - OCAML_VERSION=4.04
     #addons:
