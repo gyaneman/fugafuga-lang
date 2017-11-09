@@ -1,11 +1,10 @@
 install:
-  - bash -ex .travis-ocaml.sh
-  - eval `opam config env`
+- bash -ex .travis-ocaml.sh
+- eval `opam config env`
 sudo: required
 script: make
 env:
-  - OCAML_VERSION=4.04
-    #addons:
-    #apt:
-    #packages:
-    #  - ocaml-findlib
+- OCAML_VERSION=4.04
+notifications:
+  slack:
+    secure: Vfo2RD6sDRI7r65CaEOUsjcBv5kwsZKqfRcC3OEouPNC7qq91nUAha6U4tKSRAnfv6gs3pgO7B0Xxi1gKxlcnuonqY0G4JAm/cIqy6wh2b1pAsT3zFoFMK538HyXxCqjJByQb8ZGZcXQm50ikglOJ9elmWEA7NR3Esh8ktZU2hTX+VKCqG5Qs9SYs4Lnd38PlO+3BBxBHt+v3eMulrPDusliUO/WdcmCFHfS84M/4enMAPHlMNT6OJF3uDWzHEK6rYBUYgrW0FBLLZ4yc5q8QDoBLGWSqwX6GX9Qa4JGRqCuw0LGIj3iWsBVRVdNxzb6L+AsrUu0QtOoT6XOMGwYmE0RSBW+OLHaKWo4do4C+dhh/z32Gra2Mevyl7NdTC23wduyAXajYbSJw1ej/JYVOPzZMC8S0RsNfal0JB9xhnkHCAR9v2ICQCPNDNj7JXbakuZ8RpOGWRJzLeu5ez9oVO23QhUvNbiZXc3AVK6p36KVHKy+LZJHlmTIsVOWiFIkwZIil4ofUbT0Nk0P9Iow+lbHS7BiPAbRENCgY3YxTgOTx7YKNZGhUkPipiCLzglL2iZyw+PNw9a6nC3S9slV1/Q3/JijTf9lEf6ZaFhUFgtgqEUlQ9+1U7hr2tzws0aRUsZPp0skGnOYkmX1USweWNSBNcWKCPtPbFbe9T0ZH00=

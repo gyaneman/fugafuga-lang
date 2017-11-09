@@ -143,4 +143,3 @@ echo OPAM_SWITCH=$OPAM_SWITCH     >> .travis-ocaml.env
 ocaml -version
 opam --version
 opam --git-version
-opam install -y oasis ocamlfind
