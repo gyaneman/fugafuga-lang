@@ -33,7 +33,8 @@ and interp_stmts stmtlist env =
       | Block (stmtlist__) ->
           interp_stmts stmtlist__ env
       | For (init, cond, update, body) ->
-          raise Not_implemented_yet
+          eval init env;
+          forloop cond update body env
       | If (cond, conseq, alter) ->
           match (eval cond env) with
           | BoolVal (b) ->
@@ -146,7 +147,18 @@ and eval_list explist env =
   match explist with
   | [] -> []
   | exp :: explist_ ->
-      eval exp env :: eval_list explist_ env
+      eval exp env :: eval_list explist_ env;
+  ;
+and forloop cond update body env =
+  if boolval_to_bool (eval cond env) then
+    match interp_stmts body env with
+    | BREAK -> NEXT
+    | RET -> RET
+    | _ ->
+        eval update env;
+        forloop cond update body env
+  else
+    NEXT
 ;;
 
 
