@@ -73,6 +73,10 @@ stmt:
     If ($2, $4, $8)
   }
 
+  | FUNC IDENT PARENL ident_list PARENR BRACEL stmt_list BRACER {
+    let (_, id) = $2 in Func(id, $4, $7)
+  }
+
   | RET expr SEMICOLON {
     Ret ($2)
   }
@@ -89,7 +93,6 @@ expr:
   | PARENL expr PARENR {
     $2
   }
-
 
   | expr PLUS expr {
     Binary(Add, $1, $3)
@@ -132,9 +135,6 @@ expr:
     Unary (Not, $2)
   }
 
-  | FUNC PARENL ident_list PARENR BRACEL stmt_list BRACER {
-    Func($3, $6)
-  }
   | expr PARENL expr_list PARENR {
     Call ($1, $3)
   }

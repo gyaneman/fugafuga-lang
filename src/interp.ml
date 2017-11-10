@@ -8,45 +8,58 @@ exception Type_error
 exception Not_implemented_yet
 exception Call_stack_error
 
+type cont =
+  | NEXT (* execute next *)
+  | RET (* when `ret` statement is executed *)
+  | CONTINUE (* when `continue` statement is executed *)
+  | BREAK (* when `break` statement is executed*)
+
 
 (* for the return value of functions *)
 let retval = ref NullVal;;
 
 
 let rec interp prog env =
-  interp_stmts (prog.program) env
+  retval := NullVal;
+  interp_stmts (prog.program) env;
+  !retval
 and interp_stmts stmtlist env =
   match stmtlist with
-  | [] -> true
+  | [] -> NEXT
   | stmt :: stmtlist_ ->
-      let (is_continue, new_env) =
+      let new_env = ref env in
+      let continuation =
       match stmt with
       | Block (stmtlist__) ->
-          (interp_stmts stmtlist__ env, env);
+          interp_stmts stmtlist__ env
       | For (init, cond, update, body) ->
           raise Not_implemented_yet
       | If (cond, conseq, alter) ->
           match (eval cond env) with
           | BoolVal (b) ->
               if b then
-                (interp_stmts conseq env, env)
+                interp_stmts conseq env
               else
-                (interp_stmts alter env, env)
+                interp_stmts alter env
           | _ -> raise Type_error;
           ;
       | Expression (exp) ->
-          (true, env)
+          eval exp env;
+          NEXT
       | VarDecl (id, exp) ->
           let exp_val = eval exp env in
-          (true, extend_env id exp_val env)
+          new_env := extend_env id exp_val env;
+          NEXT
+      | Func (id, params, body) ->
+          new_env := extend_env id (FuncVal (params, body)) env;
+          NEXT
       | Ret (exp) ->
           retval := eval exp env;
-          (false, env);
+          RET
       in
-      if is_continue then
-        interp_stmts stmtlist_ new_env
-      else
-        false
+      match continuation with
+      | NEXT -> interp_stmts stmtlist_ !new_env
+      | _ -> continuation
 and eval exp env =
   match exp with
   | Binary (op, left, right) ->
@@ -108,8 +121,6 @@ and eval exp env =
         | Bool (b) -> BoolVal (b)
         | String (str) -> StringVal (str)
       end
-  | Func (params, body) ->
-      FuncVal (params, body)
   | Call (f, args) ->
       let f_val = eval f env in
       match f_val with
@@ -118,7 +129,7 @@ and eval exp env =
           let new_env = extend_env_params params arg_vals env in
           retval := NullVal;
           interp_stmts body new_env;
-          !retval;
+          !retval
       | _ -> raise Type_error;
       ;
   | Assign (id, exp) ->
