@@ -10,7 +10,7 @@ The goal is ... no ... I cannot see it...
 - OCaml 4.04
 - oasis 0.4.8
 
-## How to build
+## Build
 
 ```
 $ make
