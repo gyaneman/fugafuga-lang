@@ -1,4 +1,7 @@
-(* main.ml *)
+(*
+ * fgl.ml
+ * This is the top level file.
+ *)
 
 open Ast
 open Value
@@ -20,7 +23,7 @@ let exec_file fname =
     raise e;
 ;;
 
-let usagemsg = "./main.byte program.fgl"
+let usagemsg = "./fgl.byte program.fgl"
 
 let main =
   let speclist = [] in

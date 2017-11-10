@@ -10,5 +10,5 @@ Plugins: META(0.4), DevFiles (0.4)
 
 Executable "fglang"
   Path: src
-  MainIs: main.ml
+  MainIs: fgl.ml
 
