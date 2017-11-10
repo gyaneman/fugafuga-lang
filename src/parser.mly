@@ -26,7 +26,7 @@ open Ast
 %token <Ast.meta> SEMICOLON CAMMA
 
 /* keywords */
-%token <Ast.meta> FUNC RET VAR FOR IF ELSE TRUE FALSE
+%token <Ast.meta> FUNC RET VAR FOR BREAK CONTINUE IF ELSE TRUE FALSE
 
 /* others */
 %token <Ast.meta> EOF
@@ -65,6 +65,8 @@ stmt:
   {
     For($2, $4, $6, $8)
   }
+  | BREAK SEMICOLON { Break }
+  | CONTINUE SEMICOLON { Continue }
 
   | IF expr BRACEL stmt_list BRACER {
     If ($2, $4, [])

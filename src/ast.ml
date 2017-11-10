@@ -40,6 +40,8 @@ type expression =
 and statement =
   | Block of statement list
   | For of expression * expression * expression * statement list
+  | Break
+  | Continue
   | If of expression * statement list * statement list
   | Expression of expression
   | VarDecl of string * expression
@@ -85,6 +87,10 @@ and string_of_statement statement =
       prop "cond" (string_of_expression cond) ^ "," ^
       prop "update" (string_of_expression update) ^ "," ^
       prop "body" ("[" ^ string_of_statement_list body ^ "]")
+  | Break ->
+      prop "type" (strlit "Break")
+  | Continue ->
+      prop "type" (strlit "Continue")
   | If (exp, conseq, alter) ->
       prop "type" (strlit "If") ^ "," ^
       prop "condition" (string_of_expression exp) ^ "," ^

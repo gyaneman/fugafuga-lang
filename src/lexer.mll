@@ -29,6 +29,8 @@ type keyword =
   | KEY_RET
   | KEY_VAR
   | KEY_FOR
+  | KEY_BREAK
+  | KEY_CONTINUE
   | KEY_IF
   | KEY_ELSE
   | KEY_TRUE
@@ -43,6 +45,8 @@ let _ =
     "ret", KEY_RET;
     "var", KEY_VAR;
     "for", KEY_FOR;
+    "break", KEY_BREAK;
+    "continue", KEY_CONTINUE;
     "if", KEY_IF;
     "else", KEY_ELSE;
     "true", KEY_TRUE;
@@ -106,6 +110,8 @@ try
   | KEY_RET -> RET (get_pos lexbuf)
   | KEY_VAR -> VAR (get_pos lexbuf)
   | KEY_FOR -> FOR (get_pos lexbuf)
+  | KEY_BREAK -> BREAK (get_pos lexbuf)
+  | KEY_CONTINUE -> CONTINUE (get_pos lexbuf)
   | KEY_IF -> IF (get_pos lexbuf)
   | KEY_ELSE -> ELSE (get_pos lexbuf)
   | KEY_TRUE -> TRUE (get_pos lexbuf)
