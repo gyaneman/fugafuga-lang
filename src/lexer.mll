@@ -54,11 +54,20 @@ let digit = ['0'-'9']
 let alpha = ['A'-'Z' 'a'-'z']
 let alnum = digit | alpha | '_'
 
+let esc_seq_chars = '"' | 'n'
+let single_esc_seq_chars = '\'' | esc_seq_chars
+let single_esc_seq = '\\' single_esc_seq_chars
+let double_esc_seq_chars = '"' | esc_seq_chars
+let double_esc_seq = '\\' double_esc_seq_chars
+let single_str_chars = digit | alpha | ' ' | single_esc_seq
+let double_str_chars = digit | alpha | ' ' | double_esc_seq
 
 
 rule token = parse
 | [' ' '\t' '\n' '\r'] { token lexbuf } (* skip token *)
 | ['0'-'9']+          { INT (get_pos lexbuf, int_of_string (Lexing.lexeme lexbuf)) }
+| '\'' single_str_chars* '\'' | '"' double_str_chars* '"'
+      { STR (get_pos lexbuf, Lexing.lexeme lexbuf) }
 
 | '+'                 { PLUS (get_pos lexbuf) }
 | '-'                 { MINUS (get_pos lexbuf) }

@@ -5,6 +5,7 @@ open Ast
 
 /* literals */
 %token <Ast.meta*int> INT
+%token <Ast.meta*string> STR
 
 /* identifier */
 %token <Ast.meta*string> IDENT
@@ -86,6 +87,9 @@ expr:
   | INT   {
     let (_, num) = $1 in
     Literal(Int(num))
+  }
+  | STR {
+    let (_, str) = $1 in Literal (String (str))
   }
   | TRUE { Literal (Bool (true)) }
   | FALSE { Literal (Bool (false)) }
