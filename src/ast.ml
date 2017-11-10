@@ -107,7 +107,7 @@ and string_of_statement statement =
       prop "type" (strlit "Func") ^ "," ^
       prop "id" (strlit id) ^ "," ^
       prop "params" ("[" ^ string_of_string_list params ^ "]") ^ "," ^
-      prop "stmts" (string_of_statement_list stmts)
+      prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]")
   | Ret (exp) ->
       prop "type" (strlit "Ret") ^ "," ^
       prop "exp" (string_of_expression exp)
@@ -166,7 +166,10 @@ and string_of_expression exp =
 and string_of_string_list = function
   | [] -> ""
   | str :: strlist ->
-      str ^ "," ^ string_of_string_list strlist
+      strlit str ^ string_of_string_list_ strlist
+and string_of_string_list_ = function
+  | [] -> ""
+  | x -> "," ^ string_of_string_list x
 and string_of_binop = function
   | Add -> "add"
   | Sub -> "sub"
