@@ -14,7 +14,6 @@ let exec_file fname =
     print_string (string_of_program ast);
     print_newline();
     let result = interp ast [] in print_value result;
-    print_newline();
     flush stdout;
   with e ->
     close_in_noerr ic;

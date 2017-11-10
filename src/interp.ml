@@ -88,9 +88,13 @@ and eval exp env =
           let right_int = intval_to_int right_val in
           IntVal (left_int mod right_int)
       | Equal ->
-          raise Not_implemented_yet
+          let left_int = intval_to_int left_val in
+          let right_int = intval_to_int right_val in
+          BoolVal (left_int = right_int)
       | NotEqual ->
-          raise Not_implemented_yet
+          let left_int = intval_to_int left_val in
+          let right_int = intval_to_int right_val in
+          BoolVal (not (left_int = right_int))
       | LT ->
           let left_int = intval_to_int left_val in
           let right_int = intval_to_int right_val in
