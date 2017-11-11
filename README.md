@@ -52,9 +52,9 @@ Int(10)
 ```
 func is_zero(x) {
   if x == 0 {
-    true
+    true;
   } else {
-    false
+    false;
   }
 }
 is_zero(0) // true
