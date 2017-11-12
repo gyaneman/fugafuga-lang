@@ -99,6 +99,7 @@ rule token = parse
 | '['                 { BRACKETL (get_pos lexbuf)}
 | ']'                 { BRACKETR (get_pos lexbuf)}
 
+| ':'                 { COLON (get_pos lexbuf) }
 | ';'                 { SEMICOLON (get_pos lexbuf) }
 | ','                 { CAMMA (get_pos lexbuf) }
 

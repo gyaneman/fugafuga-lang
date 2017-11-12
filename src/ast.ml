@@ -28,6 +28,9 @@ type bin_op =
   | GTE
 ;;
 
+(* type description *)
+type typedesc = { typestr: string }
+
 (* expressions *)
 type expression =
   | Binary of bin_op * expression * expression
@@ -45,7 +48,7 @@ and statement =
   | If of expression * statement list * statement list
   | Expression of expression
   | VarDecl of string * expression
-  | Func of string * string list * statement list
+  | Func of string * typedesc * ((string * typedesc) list) * statement list
   | Ret of expression
 (* program *)
 and program = { program: statement list }
@@ -69,47 +72,49 @@ let string_of_meta { start_p = sp; end_p = ep } =
 let strlit s = "\"" ^ s ^ "\"";;
 let prop pn valstr =
   strlit pn ^ ":" ^ valstr
+let kind s = prop "kind" (strlit s)
 
 let rec string_of_program pg =
   "{" ^
-  prop "type" (strlit "Program") ^ "," ^
+  kind "Program" ^ "," ^
   prop "program" ("[" ^ string_of_statement_list pg.program ^ "]")
   ^ "}"
 and string_of_statement statement = 
   "{" ^
   match statement with
   | Block (stmtlist) ->
-      prop "type" (strlit "Block") ^ "," ^
+      kind "Block" ^ "," ^
       prop "statement_list" ("[" ^ string_of_statement_list stmtlist ^ "]")
   | For (init, cond, update, body) ->
-      prop "type" (strlit "For") ^ "," ^
+      kind "For" ^ "," ^
       prop "init" (string_of_expression init) ^ "," ^
       prop "cond" (string_of_expression cond) ^ "," ^
       prop "update" (string_of_expression update) ^ "," ^
       prop "body" ("[" ^ string_of_statement_list body ^ "]")
   | Break ->
-      prop "type" (strlit "Break")
+      kind "Break"
   | Continue ->
-      prop "type" (strlit "Continue")
+      kind "Continue"
   | If (exp, conseq, alter) ->
-      prop "type" (strlit "If") ^ "," ^
+      kind "If" ^ "," ^
       prop "condition" (string_of_expression exp) ^ "," ^
       prop "conseq" ("[" ^ string_of_statement_list conseq ^ "]") ^ "," ^
       prop "alter" ("[" ^ string_of_statement_list alter ^ "]")
   | Expression (exp) ->
-      prop "type" (strlit "Expression") ^ "," ^
+      kind "Expression" ^ "," ^
       prop "exp" (string_of_expression exp)
   | VarDecl (dst_id, src_exp) ->
-      prop "type" (strlit "VarDecl") ^ "," ^
+      kind "VarDecl" ^ "," ^
       prop "destination" (strlit dst_id) ^ "," ^
       prop "source" (string_of_expression src_exp)
-  | Func (id, params, stmts) ->
-      prop "type" (strlit "Func") ^ "," ^
+  | Func (id, t, params, stmts) ->
+      kind "Func" ^ "," ^
       prop "id" (strlit id) ^ "," ^
-      prop "params" ("[" ^ string_of_string_list params ^ "]") ^ "," ^
+      prop "type" (t.typestr) ^ "," ^
+      prop "params" ("[" ^ string_of_param_list params ^ "]") ^ "," ^
       prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]")
   | Ret (exp) ->
-      prop "type" (strlit "Ret") ^ "," ^
+      kind "Func" ^ "," ^
       prop "exp" (string_of_expression exp)
   ;
   ^ "}"
@@ -139,27 +144,27 @@ and string_of_expression exp =
   "{" ^
   match exp with
   | Binary (op, left, right) ->
-      prop "type" (strlit "BinaryExp") ^ "," ^
+      kind "BinaryExp" ^ "," ^
       prop "operator" (strlit (string_of_binop op)) ^ "," ^
       prop "left" (string_of_expression left) ^ "," ^
       prop "right" (string_of_expression right)
   | Unary (op, e) ->
-      prop "type" (strlit "UnaryExp") ^ "," ^
+      kind "UnaryExp" ^ "," ^
       prop "operator" (strlit (string_of_unaop op)) ^ "," ^
       prop "exp" (string_of_expression e)
   | Assign (dst, src) ->
-      prop "type" (strlit "Assign") ^ "," ^
+      kind "AssignExp" ^ "," ^
       prop "destination" (strlit dst) ^ "," ^
       prop "source" (string_of_expression src)
   | Call (f, args) ->
-      prop "type" (strlit "Call") ^ "," ^
+      kind "CallExp" ^ "," ^
       prop "f" (string_of_expression f) ^ "," ^
       prop "args" ("[" ^ string_of_expression_list args ^ "]")
   | Ident (id) ->
-      prop "type" (strlit "Ident") ^ "," ^
+      kind "Ident" ^ "," ^
       prop "id" (strlit id)
   | Literal (lit) ->
-      prop "type" (strlit "LiteralExp") ^ ", " ^
+      kind "Literal" ^ "," ^
       prop "literal" (string_of_literal lit)
   ;
   ^ "}"
@@ -170,6 +175,19 @@ and string_of_string_list = function
 and string_of_string_list_ = function
   | [] -> ""
   | x -> "," ^ string_of_string_list x
+and string_of_param id t =
+  "{" ^
+  kind "Param" ^ "," ^
+  prop "id" (strlit id) ^
+  prop "type" (strlit t.typestr)
+  ^ "}"
+and string_of_param_list = function
+  | [] -> ""
+  | (id, t) :: paramlist ->
+      string_of_param id t ^ string_of_param_list_ paramlist
+and string_of_param_list_ = function
+  | [] -> ""
+  | x -> "," ^ string_of_param_list x
 and string_of_binop = function
   | Add -> "add"
   | Sub -> "sub"
@@ -188,15 +206,15 @@ and string_of_literal lit =
   "{" ^
   match lit with
   | Null ->
-      prop "type" (strlit "Null")
+      kind "Null"
   | Int (num) ->
-      prop "type" (strlit "Int") ^ "," ^
+      kind "Int" ^ "," ^
       prop "num" (string_of_int num)
   | Bool (b) ->
-      prop "type" (strlit "Bool") ^ "," ^
+      kind "Bool" ^ "," ^
       prop "bool" (string_of_bool b)
   | String (str) ->
-      prop "type" (strlit "String") ^ "," ^
+      kind "String" ^ "," ^
       prop "str" (strlit str)
   ;
   ^ "}"

@@ -23,7 +23,7 @@ open Ast
 %token <Ast.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
 
 /* symbols */
-%token <Ast.meta> SEMICOLON CAMMA
+%token <Ast.meta> COLON SEMICOLON CAMMA
 
 /* keywords */
 %token <Ast.meta> FUNC RET VAR FOR BREAK CONTINUE IF ELSE TRUE FALSE
@@ -76,8 +76,10 @@ stmt:
     If ($2, $4, $8)
   }
 
-  | FUNC IDENT PARENL ident_list PARENR BRACEL stmt_list BRACER {
-    let (_, id) = $2 in Func(id, $4, $7)
+  | FUNC IDENT PARENL param_list PARENR IDENT BRACEL stmt_list BRACER {
+    let (_, id) = $2 in
+    let (_, tstr) = $6 in
+    Func(id, { typestr=tstr }, $4, $8)
   }
 
   | RET expr SEMICOLON {
@@ -163,6 +165,20 @@ expr_list:
   | /* empty */ { [] }
   | expr { [$1] }
   | expr CAMMA expr_list { $1 :: $3 }
+;
+
+param_list:
+  | /* empty */ { [] }
+  | IDENT IDENT {
+    let (_, id) = $1 in
+    let (_, t) = $2 in
+    [ (id, { typestr=t }) ]
+  }
+  | IDENT IDENT CAMMA param_list {
+    let (_, id) = $1 in
+    let (_, t) = $2 in
+    (id, { typestr=t }) :: $4
+  }
 ;
 
 ident_list:

@@ -51,8 +51,12 @@ and interp_stmts stmtlist env =
           let exp_val = eval exp env in
           new_env := extend_env id exp_val env;
           NEXT
-      | Func (id, params, body) ->
-          new_env := extend_env id (FuncVal (params, body)) env;
+      | Func (id, td, params, body) ->
+          let rec params_to_string_list = function
+            | [] -> []
+            | (id, t) :: params_ -> id :: params_to_string_list params_
+          in 
+          new_env := extend_env id (FuncVal (params_to_string_list params, body)) env;
           NEXT
       | Ret (exp) ->
           retval := eval exp env;
