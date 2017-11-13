@@ -50,7 +50,7 @@ Int(10)
 ### If statement
 
 ```
-func is_zero(x) {
+func is_zero(x int) bool {
   if x == 0 {
     true;
   } else {
