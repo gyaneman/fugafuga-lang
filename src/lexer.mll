@@ -69,6 +69,8 @@ let double_str_chars = digit | alpha | ' ' | double_esc_seq
 
 rule token = parse
 | [' ' '\t' '\n' '\r'] { token lexbuf } (* skip token *)
+| "/*" _* "*/"        { token lexbuf }
+
 | ['0'-'9']+          { INT (get_pos lexbuf, int_of_string (Lexing.lexeme lexbuf)) }
 | '\'' single_str_chars* '\'' | '"' double_str_chars* '"'
       { STR (get_pos lexbuf, Lexing.lexeme lexbuf) }
