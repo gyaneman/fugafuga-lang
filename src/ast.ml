@@ -1,4 +1,5 @@
 (* ast.ml *)
+open Type
 
 (* literals *)
 type literal =
@@ -27,9 +28,6 @@ type bin_op =
   | GT
   | GTE
 ;;
-
-(* type description *)
-type typedesc = { typestr: string }
 
 (* expressions *)
 type expression =
@@ -110,7 +108,7 @@ and string_of_statement statement =
   | Func (id, t, params, stmts) ->
       kind "Func" ^ "," ^
       prop "id" (strlit id) ^ "," ^
-      prop "type" (t.typestr) ^ "," ^
+      prop "type" (strlit (get_type_from_typedesc t)) ^ "," ^
       prop "params" ("[" ^ string_of_param_list params ^ "]") ^ "," ^
       prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]")
   | Ret (exp) ->
@@ -178,8 +176,8 @@ and string_of_string_list_ = function
 and string_of_param id t =
   "{" ^
   kind "Param" ^ "," ^
-  prop "id" (strlit id) ^
-  prop "type" (strlit t.typestr)
+  prop "id" (strlit id) ^ "," ^
+  prop "type" (strlit (get_type_from_typedesc t))
   ^ "}"
 and string_of_param_list = function
   | [] -> ""

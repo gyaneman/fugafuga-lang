@@ -35,6 +35,10 @@ and interp_stmts stmtlist env =
       | For (init, cond, update, body) ->
           eval init env;
           forloop cond update body env
+      | Continue ->
+          CONTINUE
+      | Break ->
+          BREAK
       | If (cond, conseq, alter) ->
           match (eval cond env) with
           | BoolVal (b) ->
