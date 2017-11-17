@@ -25,7 +25,7 @@ func add (x int, y int) int {
   ret x + y;
 }
 var a = 1;
-add (a, 2);
+add(a, 2);
 ```
 Result
 ```
