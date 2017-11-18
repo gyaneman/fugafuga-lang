@@ -46,7 +46,15 @@ open Type
 %%
 
 main:
-  stmt_list EOF { { program=$1 } }
+  decl_list EOF { { program=$1 } }
+;
+
+decl:
+  | FUNC IDENT PARENL param_list PARENR IDENT BRACEL stmt_list BRACER {
+    let (_, id) = $2 in
+    let (_, tstr) = $6 in
+    Func(id, get_typedesc tstr, $4, $8)
+  }
 ;
 
 stmt:
@@ -75,12 +83,6 @@ stmt:
   | IF expr BRACEL stmt_list BRACER ELSE BRACEL stmt_list BRACER
   {
     If ($2, $4, $8)
-  }
-
-  | FUNC IDENT PARENL param_list PARENR IDENT BRACEL stmt_list BRACER {
-    let (_, id) = $2 in
-    let (_, tstr) = $6 in
-    Func(id, get_typedesc tstr, $4, $8)
   }
 
   | RET expr SEMICOLON {
@@ -155,6 +157,11 @@ expr:
   | IDENT {
     let (_, id) = $1 in Ident(id)
   }
+;
+
+decl_list:
+  | decl { [$1] }
+  | decl decl_list { $1 :: $2 }
 ;
 
 stmt_list:

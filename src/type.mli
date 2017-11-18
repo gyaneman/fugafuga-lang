@@ -1,4 +1,5 @@
 exception Unknown_type_descriptor
+exception Unknown_type_id
 
 type typedesc = { typeid: int }
 val extend_type_table: string -> typedesc

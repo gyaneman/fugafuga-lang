@@ -40,16 +40,17 @@ type expression =
 (* statements *)
 and statement =
   | Block of statement list
+  | VarDecl of string * expression
   | For of expression * expression * expression * statement list
   | Break
   | Continue
   | If of expression * statement list * statement list
   | Expression of expression
-  | VarDecl of string * expression
-  | Func of string * typedesc * ((string * typedesc) list) * statement list
   | Ret of expression
+and declaration =
+  | Func of string * typedesc * ((string * typedesc) list) * statement list
 (* program *)
-and program = { program: statement list }
+and program = { program: declaration list }
 ;;
 
 
@@ -76,6 +77,17 @@ let rec string_of_program pg =
   "{" ^
   kind "Program" ^ "," ^
   prop "program" ("[" ^ string_of_statement_list pg.program ^ "]")
+  ^ "}"
+and string_of_declaration declaration =
+  "{" ^
+  match declaration with
+  | Func (id, t, params, stmts) ->
+      kind "Func" ^ "," ^
+      prop "id" (strlit id) ^ "," ^
+      prop "type" (strlit (get_type_from_typedesc t)) ^ "," ^
+      prop "params" ("[" ^ string_of_param_list params ^ "]") ^ "," ^
+      prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]");
+  ;
   ^ "}"
 and string_of_statement statement = 
   "{" ^
@@ -105,12 +117,6 @@ and string_of_statement statement =
       kind "VarDecl" ^ "," ^
       prop "destination" (strlit dst_id) ^ "," ^
       prop "source" (string_of_expression src_exp)
-  | Func (id, t, params, stmts) ->
-      kind "Func" ^ "," ^
-      prop "id" (strlit id) ^ "," ^
-      prop "type" (strlit (get_type_from_typedesc t)) ^ "," ^
-      prop "params" ("[" ^ string_of_param_list params ^ "]") ^ "," ^
-      prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]")
   | Ret (exp) ->
       kind "Func" ^ "," ^
       prop "exp" (string_of_expression exp)
