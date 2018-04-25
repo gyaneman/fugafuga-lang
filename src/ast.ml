@@ -29,13 +29,17 @@ type bin_op =
   | GTE
 ;;
 
+type ident_kind =
+  | Variable
+;;
+
 (* expressions *)
 type expression =
   | Binary of bin_op * expression * expression
   | Unary of una_op * expression
   | Assign of string * expression (* dst, src *)
   | Call of expression * expression list
-  | Ident of string
+  | Ident of string * ident_kind
   | Literal of literal
 (* statements *)
 and statement =
@@ -46,7 +50,8 @@ and statement =
   | If of expression * statement list * statement list
   | Expression of expression
   | VarDecl of string * expression
-  | Func of string * typedesc * ((string * typedesc) list) * statement list
+  (* Function(id, ret datatype, param(id, datatype) list, statements) *)
+  | Func of string * string * ((string * string) list) * statement list
   | Ret of expression
 (* program *)
 and program = { program: statement list }
@@ -108,7 +113,7 @@ and string_of_statement statement =
   | Func (id, t, params, stmts) ->
       kind "Func" ^ "," ^
       prop "id" (strlit id) ^ "," ^
-      prop "type" (strlit (get_type_from_typedesc t)) ^ "," ^
+      prop "type" (strlit t) ^ "," ^
       prop "params" ("[" ^ string_of_param_list params ^ "]") ^ "," ^
       prop "stmts" ("[" ^ string_of_statement_list stmts ^ "]")
   | Ret (exp) ->
@@ -158,9 +163,10 @@ and string_of_expression exp =
       kind "CallExp" ^ "," ^
       prop "f" (string_of_expression f) ^ "," ^
       prop "args" ("[" ^ string_of_expression_list args ^ "]")
-  | Ident (id) ->
+  | Ident (id, _) ->
       kind "Ident" ^ "," ^
-      prop "id" (strlit id)
+      prop "id" (strlit id) ^ "," ^
+      prop "ident_kind" (strlit "Variable")
   | Literal (lit) ->
       kind "Literal" ^ "," ^
       prop "literal" (string_of_literal lit)
@@ -177,7 +183,7 @@ and string_of_param id t =
   "{" ^
   kind "Param" ^ "," ^
   prop "id" (strlit id) ^ "," ^
-  prop "type" (strlit (get_type_from_typedesc t))
+  prop "type" (strlit t)
   ^ "}"
 and string_of_param_list = function
   | [] -> ""

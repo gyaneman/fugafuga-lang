@@ -49,7 +49,7 @@ and interp_stmts stmtlist env =
           | _ -> raise Type_error;
           ;
       | Expression (exp) ->
-          eval exp env;
+          eval exp env; ();
           NEXT
       | VarDecl (id, exp) ->
           let exp_val = eval exp env in
@@ -149,7 +149,7 @@ and eval exp env =
       let exp_val = eval exp env in
       assign_env id exp_val env;
       exp_val
-  | Ident (id) ->
+  | Ident (id, _) ->
       apply_env env id
 and eval_list explist env =
   match explist with

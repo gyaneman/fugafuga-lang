@@ -1,6 +1,30 @@
 exception Unknown_type_descriptor
-exception Unknown_type_id
+(*exception Unknown_type_id*)
 
+type type_desc = { sym : string ; id : int }
+
+let extend_type_env (type_id:string) (type_env:type_desc list) =
+  match type_env with
+  | [] -> { sym=type_id ; id=0 } :: type_env
+  | { sym=s ; id=i } :: type_env_ -> { sym=type_id ; id=i+1 } :: type_env
+
+let rec apply_type_env type_env type_sym =
+  match type_env with
+  | [] -> raise Unknown_type_descriptor 
+  | x :: type_env_ when x.sym = type_sym -> x
+  | x :: type_env_ -> apply_type_env type_env_ type_sym
+
+let extend_type_env_if_no_exists (type_sym:string) (type_env:type_desc list) =
+  let rec f ts te =
+    match te with
+    | [] -> extend_type_env type_sym type_env
+    | x :: te_ when x.sym = type_sym -> type_env
+    | x :: te_ -> f ts te_
+  in
+  f type_sym type_env
+
+
+(*
 type typedesc = { typeid: int }
 type type_table_cell = { name: string; typeid: int }
 
@@ -49,4 +73,4 @@ let rec get_type_from_typedesc_ id = function
 let get_type_from_typedesc (td:typedesc) =
   get_type_from_typedesc_ td.typeid !type_table
 ;;
-
+*)

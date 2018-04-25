@@ -80,7 +80,7 @@ stmt:
   | FUNC IDENT PARENL param_list PARENR IDENT BRACEL stmt_list BRACER {
     let (_, id) = $2 in
     let (_, tstr) = $6 in
-    Func(id, get_typedesc tstr, $4, $8)
+    Func(id, tstr, $4, $8)
   }
 
   | RET expr SEMICOLON {
@@ -153,7 +153,7 @@ expr:
   }
 
   | IDENT {
-    let (_, id) = $1 in Ident(id)
+    let (_, id) = $1 in Ident(id, Variable)
   }
 ;
 
@@ -173,12 +173,12 @@ param_list:
   | IDENT IDENT {
     let (_, id) = $1 in
     let (_, t) = $2 in
-    [ (id, get_typedesc t) ]
+    [ (id, t) ]
   }
   | IDENT IDENT CAMMA param_list {
     let (_, id) = $1 in
     let (_, t) = $2 in
-    (id, get_typedesc t) :: $4
+    (id, t) :: $4
   }
 ;
 
