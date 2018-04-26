@@ -3,7 +3,14 @@ exception Unknown_type_descriptor
 
 type type_desc = { sym : string ; id : int }
 
-let extend_type_env (type_id:string) (type_env:type_desc list) =
+type type_environment = type_desc list
+
+let init_type_env =
+  { sym="string"; id=2 } ::
+  { sym="bool"; id=1 } ::
+  { sym="int"; id=0 } :: []
+
+let extend_type_env (type_id:string) (type_env:type_environment) =
   match type_env with
   | [] -> { sym=type_id ; id=0 } :: type_env
   | { sym=s ; id=i } :: type_env_ -> { sym=type_id ; id=i+1 } :: type_env
@@ -14,7 +21,7 @@ let rec apply_type_env type_env type_sym =
   | x :: type_env_ when x.sym = type_sym -> x
   | x :: type_env_ -> apply_type_env type_env_ type_sym
 
-let extend_type_env_if_no_exists (type_sym:string) (type_env:type_desc list) =
+let extend_type_env_if_no_exists (type_sym:string) (type_env:type_environment) =
   let rec f ts te =
     match te with
     | [] -> extend_type_env type_sym type_env

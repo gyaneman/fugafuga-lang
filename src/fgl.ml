@@ -4,6 +4,9 @@
  *)
 
 open Parse_tree
+open Ast
+open Ast_constructor
+open Type
 open Value
 open Environment
 open Interp
@@ -21,6 +24,7 @@ let exec_file fname =
     else
       let result = interp pt [] in
       print_value result;
+      make_program pt init_type_env
     ;
     flush stdout;
   with e ->

@@ -34,10 +34,6 @@ type ident_kind =
   | Variable
 ;;
 
-module type expr = sig
-  type t = ident_kind
-end
-
 (* expressions *)
 type expression =
   | Binary of bin_op * expression * expression
