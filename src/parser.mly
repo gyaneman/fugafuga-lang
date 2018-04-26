@@ -1,36 +1,36 @@
 %{
-open Ast
+open Parse_tree
 open Type
 %}
 
 
 /* literals */
-%token <Ast.meta*int> INT
-%token <Ast.meta*string> STR
+%token <Parse_tree.meta*int> INT
+%token <Parse_tree.meta*string> STR
 
 /* identifier */
-%token <Ast.meta*string> IDENT
+%token <Parse_tree.meta*string> IDENT
 
 /* operators */
-%token <Ast.meta> PLUS MINUS MUL DIV MOD
+%token <Parse_tree.meta> PLUS MINUS MUL DIV MOD
 
 /* assignment operators */
-%token <Ast.meta> ASSIGN
+%token <Parse_tree.meta> ASSIGN
 
 /* comparison operators */
-%token <Ast.meta> EQ NOTEQ LT LTE GT GTE NOT 
+%token <Parse_tree.meta> EQ NOTEQ LT LTE GT GTE NOT 
 
 /* parenthesis, braces, brackets */
-%token <Ast.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
+%token <Parse_tree.meta> PARENL PARENR BRACEL BRACER BRACKETL BRACKETR
 
 /* symbols */
-%token <Ast.meta> COLON SEMICOLON CAMMA
+%token <Parse_tree.meta> COLON SEMICOLON CAMMA
 
 /* keywords */
-%token <Ast.meta> FUNC RET VAR FOR BREAK CONTINUE IF ELSE TRUE FALSE
+%token <Parse_tree.meta> FUNC RET VAR FOR BREAK CONTINUE IF ELSE TRUE FALSE
 
 /* others */
-%token <Ast.meta> EOF
+%token <Parse_tree.meta> EOF
 
 %left PLUS MINUS
 %left MUL DIV MOD
@@ -38,7 +38,7 @@ open Type
 %nonassoc UMINUS NOT
 
 %start main
-%type <Ast.program> main
+%type <Parse_tree.program> main
 
 
 

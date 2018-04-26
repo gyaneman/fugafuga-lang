@@ -1,6 +1,6 @@
 (* interp.ml *)
 
-open Ast
+open Parse_tree
 open Value
 open Environment
 

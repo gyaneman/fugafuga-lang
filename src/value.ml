@@ -6,7 +6,7 @@ type value =
   | IntVal of int
   | BoolVal of bool
   | StringVal of string
-  | FuncVal of string list * Ast.statement list
+  | FuncVal of string list * Parse_tree.statement list
 ;;
 
 let string_of_value = function

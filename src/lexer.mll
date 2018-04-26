@@ -1,7 +1,7 @@
 (* lexer.mll *)
 
 {
-open Ast
+open Parse_tree
 open Parser (* The token is defined in parser.mli *)
 exception Eof
 
