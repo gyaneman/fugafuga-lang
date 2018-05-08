@@ -1,0 +1,1 @@
+type identifier = { sym:string }

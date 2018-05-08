@@ -1,83 +1,63 @@
+open Identifier
+
+
 exception Unknown_type_descriptor
+exception Type_environment_internal_error
 (*exception Unknown_type_id*)
 
 type type_desc = { sym : string ; id : int }
 
-type type_environment = type_desc list
+type type_info =
+  | TypeInfoVar of type_desc (* type of variable *)
+  | TypeInfoFunc of type_desc * type_desc list (* type of return value * types of params *)
 
-let init_type_env =
-  { sym="string"; id=2 } ::
-  { sym="bool"; id=1 } ::
-  { sym="int"; id=0 } :: []
+type type_environment_cell = {
+  id: identifier;
+  type_info: type_info;
+}
 
-let extend_type_env (type_id:string) (type_env:type_environment) =
-  match type_env with
-  | [] -> { sym=type_id ; id=0 } :: type_env
-  | { sym=s ; id=i } :: type_env_ -> { sym=type_id ; id=i+1 } :: type_env
+type type_environment = type_environment_cell list
 
-let rec apply_type_env type_env type_sym =
-  match type_env with
-  | [] -> raise Unknown_type_descriptor 
-  | x :: type_env_ when x.sym = type_sym -> x
-  | x :: type_env_ -> apply_type_env type_env_ type_sym
+let init_type_environment:type_environment = []
 
-let extend_type_env_if_no_exists (type_sym:string) (type_env:type_environment) =
-  let rec f ts te =
-    match te with
-    | [] -> extend_type_env type_sym type_env
-    | x :: te_ when x.sym = type_sym -> type_env
-    | x :: te_ -> f ts te_
+let prim_type_string = { sym="string"; id=2 }
+let prim_type_bool   = { sym="bool"; id=1 }
+let prim_type_int    = { sym="int"; id=0 }
+
+let type_desc_set = ref (
+  prim_type_string ::
+  prim_type_bool ::
+  prim_type_int :: [])
+
+let untyped = { sym="untyped"; id=(-1) }
+
+let get_type_desc (type_sym:string) =
+  let rec f tds =
+    match tds with
+    | [] ->
+        begin
+          let new_type_desc =
+            let id = match !type_desc_set with
+            | x :: xs -> x.id + 1
+            | _ -> raise Type_environment_internal_error
+            in { sym=type_sym; id=id }
+          in
+          let new_type_desc_set = new_type_desc :: !type_desc_set in
+          type_desc_set := new_type_desc_set;
+          new_type_desc
+        end
+    | x :: tds_ when x.sym = type_sym -> x
+    | x :: tds_ -> f tds_
   in
-  f type_sym type_env
-
-
-(*
-type typedesc = { typeid: int }
-type type_table_cell = { name: string; typeid: int }
-
-let type_table = ref
-  [
-    { name="string"; typeid=2 };
-    { name="bool"; typeid=1 };
-    { name="int"; typeid=0 }
-  ]
-
-let extend_type_table newtype =
-  match !type_table with
-  | [] ->
-      let typeid = 0 in
-      type_table := { name=newtype; typeid=0 } :: !type_table;
-      { typeid=typeid }
-  | cell :: type_table_ ->
-      let lastid = cell.typeid in
-      type_table := { name=newtype; typeid=(lastid+1) } :: !type_table;
-      { typeid=(lastid+1) }
+  f !type_desc_set
 ;;
 
-let rec search_from_type_table typestr type_table_ =
-  match type_table_ with
+let extend_type_env (id:identifier) (t:type_info) (type_env:type_environment) =
+  { id=id; type_info=t } :: type_env;;
+
+let rec apply_type_env (type_env:type_environment) (id:identifier) =
+  match type_env with
   | [] -> raise Unknown_type_descriptor
-  | cell :: type_table_ ->
-      if cell.name = typestr then
-        { typeid=cell.typeid }
-      else
-        search_from_type_table typestr type_table_
-;;
+  | cell :: type_env_ when cell.id = id -> cell.type_info
+  | cell :: type_env_ -> apply_type_env type_env_ id
 
-let get_typedesc typestr =
-  search_from_type_table typestr !type_table
-;;
-
-let rec get_type_from_typedesc_ id = function
-  | [] -> raise Unknown_type_id
-  | cell :: type_table_ ->
-      if cell.typeid = id then
-        cell.name
-      else
-        get_type_from_typedesc_ id type_table_
-;;
-
-let get_type_from_typedesc (td:typedesc) =
-  get_type_from_typedesc_ td.typeid !type_table
-;;
-*)
